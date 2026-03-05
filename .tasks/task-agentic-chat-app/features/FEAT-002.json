@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Create AWS CDK infrastructure stack that provisions the S3 bucket with 'ntkey-' prefix for document storage. Uses the existing GxPEC2-role (which has full admin access) instead of creating a new IAM role. The CDK stack only creates the S3 bucket and BDA-related resources.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Step 1: Create cdk/__init__.py (empty), cdk/stacks/__init__.py (empty).",
     "Step 2: Create cdk/requirements.txt with CDK dependencies: aws-cdk-lib>=2.150.0, constructs>=10.0.0.",
