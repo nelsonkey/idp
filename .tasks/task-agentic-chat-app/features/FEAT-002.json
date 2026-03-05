@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Create AWS CDK infrastructure stack that provisions the S3 bucket with 'ntkey-' prefix for document storage. Uses the existing GxPEC2-role (which has full admin access) instead of creating a new IAM role. The CDK stack only creates the S3 bucket and BDA-related resources.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Step 1: Create cdk/__init__.py (empty), cdk/stacks/__init__.py (empty).",
     "Step 2: Create cdk/requirements.txt with CDK dependencies: aws-cdk-lib>=2.150.0, constructs>=10.0.0.",
@@ -25,5 +25,5 @@
     "Run: cd /projects/sandbox/idp && python -c \"import json; json.load(open('cdk/cdk.json')); print('cdk.json is valid')\""
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All CDK files pass AST parsing and ruff linting. cdk.json is valid JSON. All 5 CDK tests pass with mock-based testing (mocking aws_cdk and constructs modules since they cannot be pip installed in INTEGRATIONS_ONLY mode). Tests validate: S3 bucket with correct name/config, no IAM role creation, CfnOutputs exist, lifecycle rules correct, CORS correct. Ruff auto-fixed import sorting in idp_stack.py (needed blank line between aws_cdk and constructs imports)."
 }
