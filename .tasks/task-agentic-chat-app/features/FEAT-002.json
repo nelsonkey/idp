@@ -1,0 +1,29 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Create AWS CDK infrastructure stack that provisions the S3 bucket with 'ntkey-' prefix for document storage. Uses the existing GxPEC2-role (which has full admin access) instead of creating a new IAM role. The CDK stack only creates the S3 bucket and BDA-related resources.",
+  "status": "pending",
+  "steps": [
+    "Step 1: Create cdk/__init__.py (empty), cdk/stacks/__init__.py (empty).",
+    "Step 2: Create cdk/requirements.txt with CDK dependencies: aws-cdk-lib>=2.150.0, constructs>=10.0.0.",
+    "Step 3: Create cdk/cdk.json with: {\"app\": \"python3 app.py\", \"context\": {\"@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy\": true}}.",
+    "Step 4: Create cdk/stacks/idp_stack.py - an AWS CDK Stack class 'IdpStack' that creates: (1) An S3 bucket with bucket_name='ntkey-idp-documents', versioned=True, removal_policy=RemovalPolicy.DESTROY for dev convenience, auto_delete_objects=True, block_public_access=BlockPublicAccess.BLOCK_ALL, lifecycle_rules=[LifecycleRule(abort_incomplete_multipart_upload_after=Duration.days(7), id='AbortIncompleteMultipart'), LifecycleRule(prefix='bda-output/', expiration=Duration.days(90), id='ExpireBDAOutput')], cors=[CorsRule(allowed_methods=[HttpMethods.PUT, HttpMethods.POST, HttpMethods.GET], allowed_origins=['*'], allowed_headers=['*'])]. (2) Do NOT create any IAM role - use the existing 'GxPEC2-role' which has full admin access. Add a comment explaining this. (3) Import the existing role using iam.Role.from_role_name(self, 'ExistingRole', 'GxPEC2-role') just for reference/output purposes. (4) CfnOutput for bucket_name, bucket_arn, and a note about the existing role name 'GxPEC2-role'.",
+    "Step 5: Create cdk/app.py - CDK app entry point: import App from aws_cdk, import IdpStack from stacks.idp_stack, create App(), instantiate IdpStack(app, 'IdpStack', env=cdk.Environment(account=os.environ.get('CDK_DEFAULT_ACCOUNT'), region=os.environ.get('CDK_DEFAULT_REGION', 'us-east-1'))), call app.synth().",
+    "Step 6: Create tests/test_cdk_stack.py - test the CDK stack by importing it, creating a test App, instantiating IdpStack, getting the synthesized CloudFormation template as JSON, and asserting: (a) there is an AWS::S3::Bucket resource with BucketName 'ntkey-idp-documents', (b) there is NO AWS::IAM::Role resource created (we use existing GxPEC2-role), (c) there are CfnOutputs for bucket name and ARN."
+  ],
+  "acceptance_criteria": [
+    "All CDK Python files pass AST parsing",
+    "cdk/stacks/idp_stack.py creates an S3 bucket with bucket_name 'ntkey-idp-documents' (starts with ntkey-)",
+    "cdk/stacks/idp_stack.py does NOT create a new IAM role - references existing GxPEC2-role only",
+    "cdk/app.py is a valid CDK app entry point",
+    "cdk.json is valid JSON pointing to the correct app entry",
+    "CDK stack test verifies S3 bucket exists and no new IAM role is created"
+  ],
+  "verification": [
+    "Run: cd /projects/sandbox/idp && python -c \"import ast; [ast.parse(open(f).read()) for f in ['cdk/app.py', 'cdk/stacks/idp_stack.py']]; print('CDK files pass AST parsing')\"",
+    "Run: cd /projects/sandbox/idp && ruff check cdk/",
+    "Run: cd /projects/sandbox/idp && python -c \"import json; json.load(open('cdk/cdk.json')); print('cdk.json is valid')\""
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

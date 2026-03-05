@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "idp-agent"
+version = "0.1.0"
+description = "Intelligent Document Processing Agent - A NiceGUI chat app powered by Strands Agents SDK with Amazon Bedrock Sonnet 4.5"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+dependencies = [
+    "nicegui>=2.0",
+    "strands-agents>=0.1.0",
+    "strands-agents-tools>=0.1.0",
+    "boto3>=1.34.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.4.0",
+    "mypy>=1.0",
+]
+
+[project.scripts]
+idp-agent = "app.main:run"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

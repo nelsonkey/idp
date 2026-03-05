@@ -1,0 +1,42 @@
+{
+  "project_type": "Python NiceGUI web app with Strands Agents SDK, Amazon Bedrock Data Automation, and AWS CDK infrastructure",
+  "language": "Python",
+  "build_system": "uv for dependency management, pyproject.toml for project config",
+  "test_framework": "pytest with unit tests",
+  "build_command": "cd /projects/sandbox/idp && python -c \"import ast; import glob; [ast.parse(open(f).read()) for f in glob.glob('**/*.py', recursive=True)]\"",
+  "test_command": "cd /projects/sandbox/idp && python -m pytest tests/ -v",
+  "verification_instructions": "1. Run AST parse on all Python files to verify syntax. 2. Run ruff check for linting. 3. Since INTEGRATIONS_ONLY network, cannot pip install - verify code correctness via AST and static analysis only.",
+  "snapshot_or_generated_files": null,
+  "setup_instructions": "Cannot install packages due to INTEGRATIONS_ONLY network mode. All code is written to be correct but verification is limited to syntax checking and AST validation.",
+  "environment_constraints": "INTEGRATIONS_ONLY network mode - cannot pip install, cannot pull Docker images, cannot access external registries. Python 3.11.14 available via pyenv. Node.js v22 available. uv, ruff, black, mypy, pyright, pytest available as pre-installed tools. All verification must use AST/syntax checks rather than runtime execution.",
+  "contribution_requirements": "Greenfield project - no existing contribution guidelines. Follow standard Python conventions: pyproject.toml for config, type hints, docstrings.",
+  "key_patterns": {
+    "strands_agent": "Agent class with BedrockModel provider. callback_handler callable receives kwargs: reasoningText, data, complete, event. additional_request_fields={'thinking': {'type': 'enabled', 'budgetTokens': N}} enables reasoning. Model ID for Sonnet 4.5 US profile: 'us.anthropic.claude-sonnet-4-5-20250514-v1:0'. stream_async() yields events with data/reasoning text.",
+    "nicegui": "ui.chat_message for chat bubbles. ui.run_javascript for scroll. @ui.page for routing. ui.upload for file uploads. ui.markdown for formatted text. asyncio integration with NiceGUI's event loop.",
+    "bedrock_data_automation": "boto3 client 'bedrock-data-automation-runtime'. invoke_data_automation_async(inputConfiguration={'s3Uri': ...}, outputConfiguration={'s3Uri': ...}, dataAutomationProfileArn=...) returns invocationArn. get_data_automation_status(invocationArn=...) returns status, outputConfiguration with s3Uri for results.",
+    "s3_multipart": "boto3 S3 client. create_multipart_upload, upload_part, complete_multipart_upload. Bucket name prefix: ntkey-.",
+    "aws_cdk": "Python CDK stacks. S3 bucket with bucket_name starting with 'ntkey-'. IAM roles for Bedrock and S3 access."
+  },
+  "relevant_files": [
+    "app/__init__.py",
+    "app/main.py - NiceGUI application entry point with chat UI and document upload",
+    "app/agent.py - Strands Agent configuration with BedrockModel (Sonnet 4.5 US, reasoning enabled, streaming)",
+    "app/callback_handler.py - Custom callback handler for streaming to NiceGUI UI",
+    "app/tools/__init__.py",
+    "app/tools/upload_document.py - S3 multipart upload tool for large documents",
+    "app/tools/analyze_document.py - Bedrock Data Automation tool for document analysis",
+    "app/config.py - Application configuration constants",
+    "cdk/__init__.py",
+    "cdk/app.py - CDK app entry point",
+    "cdk/stacks/__init__.py",
+    "cdk/stacks/idp_stack.py - CDK stack defining S3 bucket (ntkey- prefix), IAM roles, BDA resources",
+    "pyproject.toml - Project dependencies and metadata",
+    "cdk/requirements.txt - CDK dependencies",
+    "tests/__init__.py",
+    "tests/test_agent.py - Unit tests for agent configuration",
+    "tests/test_tools.py - Unit tests for custom tools",
+    "tests/test_config.py - Unit tests for config",
+    "README.md"
+  ],
+  "directory_structure": "idp/ - project root; app/ - NiceGUI application code; app/tools/ - Strands agent tools; cdk/ - AWS CDK infrastructure code; cdk/stacks/ - CDK stack definitions; tests/ - pytest unit tests"
+}
